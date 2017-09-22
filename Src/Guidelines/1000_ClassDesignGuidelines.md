@@ -42,9 +42,10 @@ With the exception of extension method containers, static classes very often lea
 
 **Note:** If you really need that static class, mark it as static so that the compiler can prevent instance members and instantiating your class. This relieves you of creating an explicit private constructor.
 
-### <a name="av1010"></a> Don't hide inherited members with the new keyword (AV1010) ![](images/1.png)
+### <a name="av1010"></a> Don't suppress compiler warnings using the new keyword (AV1010) ![](images/1.png)
 
-Not only does the new keyword break [Polymorphism](http://en.wikipedia.org/wiki/Polymorphism_in_object-oriented_programming), one of the most essential object-orientation principles, it also makes sub-classes more difficult to understand. Consider the following two classes:
+Compiler warning [CS0114](https://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0114) is issued when breaking [Polymorphism](http://en.wikipedia.org/wiki/Polymorphism_in_object-oriented_programming), one of the most essential object-orientation principles.
+The warning goes away when you add the `new` keyword, but it keeps sub-classes difficult to understand. Consider the following two classes:
 
 	public class Book  
 	{
@@ -105,3 +106,23 @@ This means that two classes know about each other's public members or rely on ea
 In general, if you find a lot of data-only classes in your code base, you probably also have a few (static) classes with a lot of behavior (see AV1008). Use the principles of object-orientation explained in this section and move the logic close to the data it applies to.
 
 **Exception:** The only exceptions to this rule are classes that are used to transfer data over a communication channel, also called [Data Transfer Objects](http://martinfowler.com/eaaCatalog/dataTransferObject.html), or a class that wraps several parameters of a method.
+
+### <a name="av1026"></a> Classes should protect the consistency of their internal state (AV1026) ![](images/1.png)
+
+Validate incoming arguments from public members. For example:
+
+	public void SetAge(int years)
+	{
+		AssertValueIsInRange(years, 0, 200, nameof(years));
+		
+		this.age = years;
+	}
+
+Protect invariants on internal state. For example:
+
+	public void Render()
+	{
+		AssertNotDisposed();
+		
+		// ...
+	}
